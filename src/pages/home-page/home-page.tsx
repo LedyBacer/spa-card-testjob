@@ -23,6 +23,7 @@ import {
   handleDelete,
   handleFavorite,
 } from '../../services/userActionsSlice.ts';
+import { useNavigate, useParams } from 'react-router-dom';
 
 function SingleCard({
   title,
@@ -34,6 +35,7 @@ function SingleCard({
   id: string;
 }) {
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
   const userFavoriteItems = useAppSelector(
     state => state.userActions.favoriteItems,
   );
@@ -52,8 +54,8 @@ function SingleCard({
 
   return (
     <>
-      <Card sx={{ maxWidth: 345 }}>
-        <CardActionArea>
+      <Card sx={{ width: 250 }}>
+        <CardActionArea onClick={() => navigate(`/card/${id}`)}>
           <CardMedia
             component="img"
             height="140"
@@ -61,7 +63,7 @@ function SingleCard({
             alt="green iguana"
           />
           <CardContent>
-            <Typography noWrap gutterBottom variant="h5" component="div">
+            <Typography noWrap gutterBottom variant="h6" component="div">
               {title}
             </Typography>
           </CardContent>
@@ -96,11 +98,10 @@ function Filter({
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
+        marginBottom: '15px',
       }}
     >
-      <Typography>
-        Показать только лайкнутые карточки на этой странице:{' '}
-      </Typography>
+      <Typography>Show only liked cards on this page: </Typography>
       <Checkbox
         icon={<FilterAltOutlinedIcon />}
         checkedIcon={<FilterAltIcon />}
@@ -112,10 +113,13 @@ function Filter({
 }
 
 export default function HomePage() {
+  const navigate = useNavigate();
+  const { page: pageFromParams = 1 } = useParams();
   const [filterChecked, setFilterChecked] = React.useState(false);
-  const [page, setPage] = React.useState(1);
+  const [page, setPage] = React.useState(Number(pageFromParams));
   const handleChange = (_event: React.ChangeEvent<unknown>, value: number) => {
     setPage(value);
+    navigate(`/${value}`);
   };
   const { data: films, isLoading, isFetching } = useGetLoveMoviesQuery(page);
   const userDeletedItems = useAppSelector(
@@ -152,7 +156,11 @@ export default function HomePage() {
   };
 
   if (isLoading) {
-    return <CircularProgress />;
+    return (
+      <Container sx={{ display: 'flex', justifyContent: 'center' }}>
+        <CircularProgress />
+      </Container>
+    );
   }
 
   if (
@@ -160,7 +168,11 @@ export default function HomePage() {
     typeof favoriteFilmsData === 'undefined' ||
     typeof processedFilmsData === 'undefined'
   ) {
-    return <Typography>No Data :(</Typography>;
+    return (
+      <Container sx={{ display: 'flex', justifyContent: 'center' }}>
+        <Typography>No Data :(</Typography>
+      </Container>
+    );
   }
 
   return (
@@ -192,6 +204,7 @@ export default function HomePage() {
           display: 'flex',
           justifyContent: 'center',
           alignItems: 'center',
+          marginTop: '30px',
         }}
       >
         <Pagination count={totalPages} page={page} onChange={handleChange} />
