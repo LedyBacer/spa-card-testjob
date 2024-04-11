@@ -35,7 +35,11 @@ export default function CardDetails() {
         Back
       </Button>
       <Container sx={{ display: 'flex' }}>
-        <img src={film.Poster} alt="Poster" />
+        <img
+          src={film.Poster}
+          alt="Poster"
+          style={{ filter: 'drop-shadow(2px 4px 6px black)' }}
+        />
         <Container
           sx={{
             textAlign: 'justify',
