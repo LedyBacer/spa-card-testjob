@@ -44,7 +44,7 @@ npm install
 ```
 4. Copy env file:
 ```
-cp .env_example .env
+cp .env.example .env
 ```
 5. Change backend URL and api key inside .env:
 ```
