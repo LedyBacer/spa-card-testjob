@@ -42,7 +42,15 @@ cd spa-card-testjob
 ```
 npm install
 ```
-4. Run the project:
+4. Copy env file:
+```
+cp .env_example .env
+```
+5. Change backend URL and api key inside .env:
+```
+nano .env
+```
+6. Run the project:
 ```
 npm run dev
 ```
