@@ -65,14 +65,10 @@ export default function HomePage() {
 
   return (
     <Container>
-      {processedFilmsData.length === 0 ? (
-        <></>
-      ) : (
-        <Filter
-          handleFilterChange={handleFilterChange}
-          filterChecked={filterChecked}
-        />
-      )}
+      <Filter
+        handleFilterChange={handleFilterChange}
+        filterChecked={filterChecked}
+      />
       {isFetching ? (
         <Loading />
       ) : (
