@@ -21,7 +21,7 @@ export default function Filter({
         marginBottom: '15px',
       }}
     >
-      <Typography>Show only liked cards on this page: </Typography>
+      <Typography>Show only liked cards: </Typography>
       <Checkbox
         icon={<FilterAltOutlinedIcon />}
         checkedIcon={<FilterAltIcon />}
