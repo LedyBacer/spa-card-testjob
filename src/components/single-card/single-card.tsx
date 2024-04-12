@@ -3,7 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import React from 'react';
 import {
   handleDelete,
-  handleFavorite,
+  handleDisableFavorite,
+  handleEnableFavorite,
 } from '../../services/userActionsSlice.ts';
 import {
   Card,
@@ -33,12 +34,22 @@ export default function SingleCard({
     state => state.userActions.favoriteItems,
   );
   const [checked, setChecked] = React.useState(
-    userFavoriteItems.includes(id) ?? false,
+    userFavoriteItems.some(el => el.imdbID === id) ?? false,
   );
 
   const handleLikeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setChecked(event.target.checked);
-    dispatch(handleFavorite(id));
+    if (event.target.checked) {
+      dispatch(
+        handleEnableFavorite({
+          imdbID: id,
+          Title: title,
+          Poster: image,
+        }),
+      );
+    } else {
+      dispatch(handleDisableFavorite(id));
+    }
   };
 
   const handleDeleteClick = () => {

@@ -1,4 +1,4 @@
-import { CircularProgress, Pagination, Typography } from '@mui/material';
+import { Pagination } from '@mui/material';
 import Container from '@mui/material/Container';
 import Grid from '@mui/material/Unstable_Grid2';
 import React, { useMemo } from 'react';
@@ -7,6 +7,8 @@ import { useAppSelector } from '../../hooks/typedHooks.ts';
 import { useNavigate, useParams } from 'react-router-dom';
 import Filter from '../../components/filter/filter.tsx';
 import SingleCard from '../../components/single-card/single-card.tsx';
+import NoData from '../../components/no-data/no-data.tsx';
+import Loading from '../../components/loading/loading.tsx';
 
 export default function HomePage() {
   const navigate = useNavigate();
@@ -34,12 +36,10 @@ export default function HomePage() {
   }, [films, userDeletedItems]);
 
   const favoriteFilmsData = useMemo(() => {
-    if (typeof processedFilmsData !== 'undefined') {
-      return processedFilmsData.filter(item =>
-        userFavoriteItems.includes(item.imdbID),
-      );
-    }
-  }, [processedFilmsData, userFavoriteItems]);
+    return userFavoriteItems.filter(
+      item => !userDeletedItems.includes(item.imdbID),
+    );
+  }, [userFavoriteItems, userDeletedItems]);
 
   const totalPages = useMemo(
     () =>
@@ -52,48 +52,50 @@ export default function HomePage() {
   };
 
   if (isLoading) {
-    return (
-      <Container sx={{ display: 'flex', justifyContent: 'center' }}>
-        <CircularProgress />
-      </Container>
-    );
+    return <Loading />;
   }
 
   if (
-    typeof films === 'undefined' ||
     typeof favoriteFilmsData === 'undefined' ||
-    typeof processedFilmsData === 'undefined'
+    typeof processedFilmsData === 'undefined' ||
+    typeof films === 'undefined'
   ) {
-    return (
-      <Container sx={{ display: 'flex', justifyContent: 'center' }}>
-        <Typography>No Data :(</Typography>
-      </Container>
-    );
+    return <NoData />;
   }
 
   return (
     <Container>
-      <Filter
-        handleFilterChange={handleFilterChange}
-        filterChecked={filterChecked}
-      />
+      {processedFilmsData.length === 0 ? (
+        <></>
+      ) : (
+        <Filter
+          handleFilterChange={handleFilterChange}
+          filterChecked={filterChecked}
+        />
+      )}
       {isFetching ? (
-        <Container sx={{ display: 'flex', justifyContent: 'center' }}>
-          <CircularProgress />
-        </Container>
+        <Loading />
       ) : (
         <Grid container spacing={2}>
-          {filterChecked
-            ? favoriteFilmsData.map(({ imdbID, Title, Poster }) => (
+          {filterChecked ? (
+            favoriteFilmsData.length === 0 ? (
+              <NoData />
+            ) : (
+              favoriteFilmsData.map(({ imdbID, Title, Poster }) => (
                 <Grid key={imdbID}>
                   <SingleCard title={Title} image={Poster} id={imdbID} />
                 </Grid>
               ))
-            : processedFilmsData.map(({ imdbID, Title, Poster }) => (
-                <Grid key={imdbID}>
-                  <SingleCard title={Title} image={Poster} id={imdbID} />
-                </Grid>
-              ))}
+            )
+          ) : processedFilmsData.length === 0 ? (
+            <NoData />
+          ) : (
+            processedFilmsData.map(({ imdbID, Title, Poster }) => (
+              <Grid key={imdbID}>
+                <SingleCard title={Title} image={Poster} id={imdbID} />
+              </Grid>
+            ))
+          )}
         </Grid>
       )}
       <Container
@@ -105,7 +107,11 @@ export default function HomePage() {
           marginTop: '30px',
         }}
       >
-        <Pagination count={totalPages} page={page} onChange={handleChange} />
+        {filterChecked ? (
+          <></>
+        ) : (
+          <Pagination count={totalPages} page={page} onChange={handleChange} />
+        )}
       </Container>
     </Container>
   );
